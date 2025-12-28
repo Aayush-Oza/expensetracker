@@ -11,12 +11,27 @@ let ledgerData = [];
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   return fetch(`${API_BASE}${endpoint}`, {
-    credentials: "include", // 🔥 REQUIRED FOR SESSIONS
+    credentials: "include", // REQUIRED for session cookie
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
     ...options
-  }).then(res => {
-    if (!res.ok) throw new Error("Request failed");
-    return res.json();
-  });
+  })
+    .then(async res => {
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Invalid server response");
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+      }
+
+      return data;
+    });
 }
 
 /* =====================================================
@@ -28,13 +43,13 @@ function loadLedger() {
 
   if (!tbody || !balanceEl) return;
 
-  // Load transactions
+  /* ===== LOAD TRANSACTIONS ===== */
   apiFetch("/api/transactions")
     .then(data => {
       ledgerData = data;
       tbody.innerHTML = "";
 
-      if (data.length === 0) {
+      if (!data.length) {
         tbody.innerHTML = `
           <tr>
             <td colspan="7" style="text-align:center; opacity:.6">
@@ -55,34 +70,34 @@ function loadLedger() {
             <td data-label="Mode">${t.mode}</td>
             <td data-label="Amount">${t.amount}</td>
             <td data-label="Actions" class="actions">
-              <button type="button" class="edit-btn" onclick="openEdit(${t.id})">
-                Edit
-              </button>
-              <button type="button" class="delete-btn" onclick="deleteTxn(${t.id})">
-                Delete
-              </button>
+              <button class="edit-btn" onclick="openEdit(${t.id})">Edit</button>
+              <button class="delete-btn" onclick="deleteTxn(${t.id})">Delete</button>
             </td>
           </tr>
         `);
       });
     })
-    .catch(() => showToast("Failed to load transactions", "error"));
+    .catch(err => {
+      console.warn("Ledger load failed:", err.message);
+      showToast("Unable to load transactions", "error");
+    });
 
-  // Load balance
+  /* ===== LOAD BALANCE ===== */
   apiFetch("/api/ledger")
     .then(data => {
-      balanceEl.innerText = data.balance;
+      balanceEl.textContent = data.balance ?? 0;
     })
-    .catch(() => showToast("Failed to load balance", "error"));
+    .catch(err => {
+      console.warn("Balance load failed:", err.message);
+      balanceEl.textContent = "—";
+    });
 }
 
 /* =====================================================
-   DELETE TRANSACTION (AJAX)
+   DELETE TRANSACTION
 ===================================================== */
 function deleteTxn(id) {
-  apiFetch(`/api/delete-transaction/${id}`, {
-    method: "DELETE"
-  })
+  apiFetch(`/api/delete-transaction/${id}`, { method: "DELETE" })
     .then(() => {
       showToast("Transaction deleted");
       loadLedger();
@@ -91,7 +106,7 @@ function deleteTxn(id) {
 }
 
 /* =====================================================
-   OPEN EDIT MODAL
+   EDIT TRANSACTION
 ===================================================== */
 function openEdit(id) {
   currentEditId = id;
@@ -112,23 +127,16 @@ function openEdit(id) {
   document.getElementById("editModal").classList.remove("hidden");
 }
 
-/* =====================================================
-   CLOSE EDIT MODAL
-===================================================== */
 function closeEdit() {
   document.getElementById("editModal").classList.add("hidden");
   currentEditId = null;
 }
 
-/* =====================================================
-   SAVE EDIT (FULL UPDATE, AJAX)
-===================================================== */
 function saveEdit() {
   if (!currentEditId) return;
 
   apiFetch(`/api/edit-transaction/${currentEditId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       amount: editAmount.value,
       type: editType.value,
@@ -147,14 +155,15 @@ function saveEdit() {
 }
 
 /* =====================================================
-   DOWNLOAD LEDGER
+   DOWNLOAD LEDGER (PDF)
 ===================================================== */
 function downloadLedger() {
-  window.location.href = `${API_BASE}/api/download-ledger`;
+  // MUST be absolute URL for cross-origin file download
+  window.location.assign(`${API_BASE}/api/download-ledger`);
 }
 
 /* =====================================================
-   TOAST (SAFE GUARD)
+   TOAST
 ===================================================== */
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
