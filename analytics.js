@@ -1,4 +1,8 @@
-fetch("/api/analytics", { credentials: "include" })
+const API_BASE = "https://exptrk-8ssb.onrender.com";
+
+fetch(`${API_BASE}/api/analytics`, {
+  credentials: "include"
+})
   .then(async res => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed");
@@ -46,4 +50,8 @@ fetch("/api/analytics", { credentials: "include" })
       }
     });
 
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Failed to load analytics");
   });

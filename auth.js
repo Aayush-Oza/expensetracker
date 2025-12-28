@@ -1,6 +1,12 @@
+const API_BASE = "https://exptrk-8ssb.onrender.com";
+
+/* =====================================================
+   LOGIN
+===================================================== */
 function login() {
-  fetch("/api/login", {
+  fetch(`${API_BASE}/api/login`, {
     method: "POST",
+    credentials: "include", // keep sessions working
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       email: email.value,
@@ -14,7 +20,8 @@ function login() {
   })
   .then(data => {
     if (data.success) {
-      window.location.href = "/dashboard";
+      // IMPORTANT: GitHub Pages has no /dashboard route
+      window.location.href = "dashboard.html";
     } else {
       alert("Invalid email or password");
     }
@@ -25,6 +32,9 @@ function login() {
   });
 }
 
+/* =====================================================
+   REGISTER
+===================================================== */
 function register() {
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
@@ -35,8 +45,9 @@ function register() {
     return;
   }
 
-  fetch("/api/register", {
+  fetch(`${API_BASE}/api/register`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       name: nameInput.value.trim(),
@@ -51,7 +62,8 @@ function register() {
   })
   .then(data => {
     if (data.success) {
-      window.location.href = "/";
+      // redirect to login page on GitHub Pages
+      window.location.href = "index.html";
     } else {
       alert(data.error);
     }

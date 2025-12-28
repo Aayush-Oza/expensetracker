@@ -1,3 +1,5 @@
+const API_BASE = "https://exptrk-8ssb.onrender.com";
+
 /* =====================================================
    GLOBAL STATE
 ===================================================== */
@@ -7,8 +9,8 @@ let ledgerData = [];
 /* =====================================================
    FETCH WRAPPER (SESSION SAFE)
 ===================================================== */
-function apiFetch(url, options = {}) {
-  return fetch(url, {
+function apiFetch(endpoint, options = {}) {
+  return fetch(`${API_BASE}${endpoint}`, {
     credentials: "include", // 🔥 REQUIRED FOR SESSIONS
     ...options
   }).then(res => {
@@ -47,12 +49,12 @@ function loadLedger() {
         tbody.insertAdjacentHTML("beforeend", `
           <tr>
             <td data-label="Date">${t.date}</td>
-<td data-label="Type">${t.type}</td>
-<td data-label="Category">${t.category}</td>
-<td data-label="Description">${t.description || "-"}</td>
-<td data-label="Mode">${t.mode}</td>
-<td data-label="Amount">${t.amount}</td>
-<td data-label="Actions" class="actions">
+            <td data-label="Type">${t.type}</td>
+            <td data-label="Category">${t.category}</td>
+            <td data-label="Description">${t.description || "-"}</td>
+            <td data-label="Mode">${t.mode}</td>
+            <td data-label="Amount">${t.amount}</td>
+            <td data-label="Actions" class="actions">
               <button type="button" class="edit-btn" onclick="openEdit(${t.id})">
                 Edit
               </button>
@@ -148,7 +150,7 @@ function saveEdit() {
    DOWNLOAD LEDGER
 ===================================================== */
 function downloadLedger() {
-  window.location.href = "/api/download-ledger";
+  window.location.href = `${API_BASE}/api/download-ledger`;
 }
 
 /* =====================================================

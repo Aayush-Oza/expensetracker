@@ -1,10 +1,12 @@
+const API_BASE = "https://exptrk-8ssb.onrender.com";
+
 /* =====================================================
    ADD TRANSACTION
 ===================================================== */
 function addTransaction() {
   let selectedCategory = category.value;
 
-  fetch("/api/add-transaction", {
+  fetch(`${API_BASE}/api/add-transaction`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -35,14 +37,19 @@ function addTransaction() {
     description.value = "";
     date.value = "";
   })
-  .catch(() => showToast("Server error", "error"));
+  .catch(err => {
+    console.error(err);
+    showToast("Server error", "error");
+  });
 }
 
 /* =====================================================
    LOGOUT
 ===================================================== */
 function logout() {
-  window.location.href = "/logout";
+  // 🔥 GitHub Pages cannot handle backend logout
+  // Just redirect to login page
+  window.location.href = "index.html";
 }
 
 /* =====================================================
