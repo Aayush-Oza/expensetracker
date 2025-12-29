@@ -1,9 +1,19 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
-fetch(`${API_BASE}/api/analytics`, {
-  credentials: "include"
-})
-  .then(async res => {
+// 🔥 JWT-aware fetch
+function apiFetch(endpoint) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("No auth token found");
+  }
+
+  return fetch(`${API_BASE}${endpoint}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    }
+  }).then(async res => {
     let data = {};
     try {
       data = await res.json();
@@ -12,11 +22,17 @@ fetch(`${API_BASE}/api/analytics`, {
     }
 
     if (!res.ok) {
-      throw new Error(data.error || "Analytics request failed");
+      throw new Error(data.error || "Request failed");
     }
 
     return data;
-  })
+  });
+}
+
+// ================================
+// LOAD ANALYTICS
+// ================================
+apiFetch("/api/analytics")
   .then(data => {
 
     /* ===== PAYMENT MODE ===== */
@@ -70,8 +86,12 @@ fetch(`${API_BASE}/api/analytics`, {
 
   })
   .catch(err => {
-    // ❌ No alerts
-    // ✅ Silent failure
-    // ✅ Developer-only visibility
+    // Silent for users, loud for devs
     console.warn("Analytics not loaded:", err.message);
+
+    // Optional: force logout if token is invalid
+    if (err.message.toLowerCase().includes("unauthorized")) {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
   });

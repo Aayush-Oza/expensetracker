@@ -1,35 +1,36 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
-   LOGIN
+   LOGIN (JWT)
 ===================================================== */
 function login() {
   fetch(`${API_BASE}/api/login`, {
     method: "POST",
-    credentials: "include", // keep sessions working
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      email: email.value,
+      email: email.value.trim(),
       password: password.value
     })
   })
-  .then(async res => {
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed");
-    return data;
-  })
-  .then(data => {
-    if (data.success) {
-      // IMPORTANT: GitHub Pages has no /dashboard route
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
+      return data;
+    })
+    .then(data => {
+      // 🔥 STORE JWT TOKEN
+      localStorage.setItem("token", data.token);
+
+      // Optional: store user info
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirect
       window.location.href = "dashboard.html";
-    } else {
-      alert("Invalid email or password");
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Server error");
-  });
+    })
+    .catch(err => {
+      console.error(err);
+      alert(err.message || "Server error");
+    });
 }
 
 /* =====================================================
@@ -47,7 +48,6 @@ function register() {
 
   fetch(`${API_BASE}/api/register`, {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       name: nameInput.value.trim(),
@@ -55,21 +55,26 @@ function register() {
       password: passwordInput.value.trim()
     })
   })
-  .then(async res => {
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed");
-    return data;
-  })
-  .then(data => {
-    if (data.success) {
-      // redirect to login page on GitHub Pages
+    .then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Registration failed");
+      return data;
+    })
+    .then(() => {
+      // After successful register → go to login
       window.location.href = "index.html";
-    } else {
-      alert(data.error);
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Server error");
-  });
+    })
+    .catch(err => {
+      console.error(err);
+      alert(err.message || "Server error");
+    });
+}
+
+/* =====================================================
+   LOGOUT (JWT)
+===================================================== */
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
 }

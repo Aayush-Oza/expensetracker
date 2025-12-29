@@ -1,54 +1,65 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
+   JWT FETCH HELPER
+===================================================== */
+function apiFetch(endpoint, options = {}) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "index.html";
+    return Promise.reject("No auth token");
+  }
+
+  return fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+      ...(options.headers || {})
+    }
+  }).then(async res => {
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Request failed");
+    return data;
+  });
+}
+
+/* =====================================================
    ADD TRANSACTION
 ===================================================== */
 function addTransaction() {
-  let selectedCategory = category.value;
-
-  fetch(`${API_BASE}/api/add-transaction`, {
+  apiFetch("/api/add-transaction", {
     method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       amount: amount.value,
       type: type.value,
-      category: selectedCategory,
+      category: category.value,
       description: description.value,
       mode: mode.value,
       date: date.value
     })
   })
-  .then(async res => {
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed");
-    return data;
-  })
-  .then(data => {
-    if (!data.success) {
-      showToast("Failed to add transaction", "error");
-      return;
-    }
+    .then(() => {
+      showToast("Transaction added");
 
-    showToast("Transaction added");
-
-    amount.value = "";
-    category.value = "";
-    description.value = "";
-    date.value = "";
-  })
-  .catch(err => {
-    console.error(err);
-    showToast("Server error", "error");
-  });
+      amount.value = "";
+      category.value = "";
+      description.value = "";
+      date.value = "";
+    })
+    .catch(err => {
+      console.error(err);
+      showToast(err.message || "Server error", "error");
+    });
 }
 
 /* =====================================================
-   LOGOUT
+   LOGOUT (JWT)
 ===================================================== */
 function logout() {
-  // 🔥 GitHub Pages cannot handle backend logout
-  // Just redirect to login page
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
   window.location.href = "index.html";
 }
 
@@ -66,7 +77,3 @@ function showToast(message, type = "success") {
     toast.className = "toast";
   }, 2500);
 }
-
-/* =====================================================
-   INIT
-===================================================== */

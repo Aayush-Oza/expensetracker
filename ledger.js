@@ -7,31 +7,37 @@ let currentEditId = null;
 let ledgerData = [];
 
 /* =====================================================
-   FETCH WRAPPER (SESSION SAFE)
+   JWT FETCH WRAPPER
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "index.html";
+    return Promise.reject("No auth token");
+  }
+
   return fetch(`${API_BASE}${endpoint}`, {
-    credentials: "include", // REQUIRED for session cookie
+    ...options,
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
       ...(options.headers || {})
-    },
-    ...options
-  })
-    .then(async res => {
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error("Invalid server response");
-      }
+    }
+  }).then(async res => {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error("Invalid server response");
+    }
 
-      if (!res.ok) {
-        throw new Error(data.error || "Request failed");
-      }
+    if (!res.ok) {
+      throw new Error(data.error || "Request failed");
+    }
 
-      return data;
-    });
+    return data;
+  });
 }
 
 /* =====================================================
@@ -78,7 +84,7 @@ function loadLedger() {
       });
     })
     .catch(err => {
-      console.warn("Ledger load failed:", err.message);
+      console.warn("Ledger load failed:", err);
       showToast("Unable to load transactions", "error");
     });
 
@@ -87,8 +93,7 @@ function loadLedger() {
     .then(data => {
       balanceEl.textContent = data.balance ?? 0;
     })
-    .catch(err => {
-      console.warn("Balance load failed:", err.message);
+    .catch(() => {
       balanceEl.textContent = "—";
     });
 }
@@ -155,11 +160,35 @@ function saveEdit() {
 }
 
 /* =====================================================
-   DOWNLOAD LEDGER (PDF)
+   DOWNLOAD LEDGER (PDF) – JWT SAFE
 ===================================================== */
 function downloadLedger() {
-  // MUST be absolute URL for cross-origin file download
-  window.location.assign(`${API_BASE}/api/download-ledger`);
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  fetch(`${API_BASE}/api/download-ledger`, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Download failed");
+      return res.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ledger.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(() => showToast("Download failed", "error"));
 }
 
 /* =====================================================
