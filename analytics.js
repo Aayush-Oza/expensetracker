@@ -1,11 +1,15 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
-// 🔥 JWT-aware fetch
+/* =====================================================
+   JWT FETCH HELPER (STRICT)
+===================================================== */
 function apiFetch(endpoint) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    throw new Error("No auth token found");
+    localStorage.clear();
+    window.location.replace("index.html");
+    return Promise.reject("No auth token");
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
@@ -13,25 +17,31 @@ function apiFetch(endpoint) {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     }
-  }).then(async res => {
-    let data = {};
-    try {
-      data = await res.json();
-    } catch {
-      throw new Error("Invalid JSON response");
-    }
+  })
+    .then(async res => {
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {}
 
-    if (!res.ok) {
-      throw new Error(data.error || "Request failed");
-    }
+      if (res.status === 401) {
+        // token invalid / expired / tampered
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("Unauthorized");
+      }
 
-    return data;
-  });
+      if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+      }
+
+      return data;
+    });
 }
 
-// ================================
-// LOAD ANALYTICS
-// ================================
+/* =====================================================
+   LOAD ANALYTICS
+===================================================== */
 apiFetch("/api/analytics")
   .then(data => {
 
@@ -85,13 +95,7 @@ apiFetch("/api/analytics")
     }
 
   })
-  .catch(err => {
-    // Silent for users, loud for devs
-    console.warn("Analytics not loaded:", err.message);
-
-    // Optional: force logout if token is invalid
-    if (err.message.toLowerCase().includes("unauthorized")) {
-      localStorage.removeItem("token");
-      window.location.href = "index.html";
-    }
+  .catch(() => {
+    // user is already redirected on auth failure
+    console.warn("Analytics not loaded");
   });
