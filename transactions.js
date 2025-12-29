@@ -1,42 +1,43 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
-   JWT FETCH HELPER (SAFE)
+   JWT FETCH HELPER (CLEAN & CONSISTENT)
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    throw new Error("No auth token");
+    // user is not logged in
+    return Promise.reject(new Error("NO_TOKEN"));
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
     method: options.method || "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-      ...(options.headers || {})
+      "Authorization": `Bearer ${token}`
     },
-    body: options.body
-  }).then(async res => {
-    let data = {};
-    try {
-      data = await res.json();
-    } catch {}
+    body: options.body ? JSON.stringify(options.body) : undefined
+  })
+    .then(async res => {
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {}
 
-    if (res.status === 401) {
-      // token is invalid – clear it, but DO NOT redirect here
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      throw new Error("Unauthorized");
-    }
+      if (res.status === 401) {
+        // token invalid / expired
+        return Promise.reject(new Error("UNAUTHORIZED"));
+      }
 
-    if (!res.ok) {
-      throw new Error(data.error || "Request failed");
-    }
+      if (!res.ok) {
+        return Promise.reject(
+          new Error(data.error || "REQUEST_FAILED")
+        );
+      }
 
-    return data;
-  });
+      return data;
+    });
 }
 
 /* =====================================================
@@ -45,14 +46,14 @@ function apiFetch(endpoint, options = {}) {
 function addTransaction() {
   apiFetch("/api/add-transaction", {
     method: "POST",
-    body: JSON.stringify({
+    body: {
       amount: amount.value,
       type: type.value,
       category: category.value,
       description: description.value,
       mode: mode.value,
       date: date.value
-    })
+    }
   })
     .then(() => {
       showToast("Transaction added");
@@ -63,10 +64,12 @@ function addTransaction() {
       date.value = "";
     })
     .catch(err => {
-      if (err.message === "Unauthorized") {
-        // auth-guard will redirect on next load
+      if (err.message === "NO_TOKEN" || err.message === "UNAUTHORIZED") {
+        // let auth-guard handle redirect
         return;
       }
+
+      console.error(err);
       showToast("Unable to add transaction", "error");
     });
 }

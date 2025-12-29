@@ -7,13 +7,13 @@ let currentEditId = null;
 let ledgerData = [];
 
 /* =====================================================
-   JWT FETCH WRAPPER (SAFE)
+   JWT FETCH WRAPPER (PASSIVE)
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    throw new Error("No auth token");
+    return Promise.reject(new Error("NO_TOKEN"));
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
@@ -31,13 +31,13 @@ function apiFetch(endpoint, options = {}) {
     } catch {}
 
     if (res.status === 401) {
-      // Token is invalid → let auth-guard handle redirect
-      localStorage.clear();
-      throw new Error("Unauthorized");
+      return Promise.reject(new Error("UNAUTHORIZED"));
     }
 
     if (!res.ok) {
-      throw new Error(data.error || "Request failed");
+      return Promise.reject(
+        new Error(data.error || "REQUEST_FAILED")
+      );
     }
 
     return data;
@@ -45,12 +45,11 @@ function apiFetch(endpoint, options = {}) {
 }
 
 /* =====================================================
-   LOAD LEDGER (TABLE + BALANCE)
+   LOAD LEDGER
 ===================================================== */
 function loadLedger() {
   const tbody = document.getElementById("ledgerBody");
   const balanceEl = document.getElementById("balance");
-
   if (!tbody || !balanceEl) return;
 
   apiFetch("/api/transactions")
@@ -61,7 +60,7 @@ function loadLedger() {
       if (!data.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" style="text-align:center; opacity:.6">
+            <td colspan="7" style="text-align:center;opacity:.6">
               No transactions yet
             </td>
           </tr>
@@ -87,9 +86,10 @@ function loadLedger() {
       });
     })
     .catch(err => {
-      if (err.message !== "Unauthorized") {
+      if (err.message !== "UNAUTHORIZED") {
         showToast("Unable to load transactions", "error");
       }
+      // auth-guard will redirect if token is truly gone
     });
 
   apiFetch("/api/ledger")
@@ -102,7 +102,7 @@ function loadLedger() {
 }
 
 /* =====================================================
-   DELETE TRANSACTION
+   DELETE
 ===================================================== */
 function deleteTxn(id) {
   apiFetch(`/api/delete-transaction/${id}`, { method: "DELETE" })
@@ -114,7 +114,7 @@ function deleteTxn(id) {
 }
 
 /* =====================================================
-   EDIT TRANSACTION
+   EDIT
 ===================================================== */
 function openEdit(id) {
   currentEditId = id;
@@ -187,7 +187,6 @@ function downloadLedger() {
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
   if (!toast) return;
-
   toast.textContent = message;
   toast.className = `toast show ${type}`;
   setTimeout(() => (toast.className = "toast"), 2500);

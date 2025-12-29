@@ -12,5 +12,19 @@
     if (!localStorage.getItem("token")) {
       window.location.replace("index.html");
     }
+  });(function () {
+  // Initial hard auth check
+  if (!localStorage.getItem("token")) {
+    window.location.replace("index.html");
+    return;
+  }
+
+  // Handle back / cache restore (mobile-safe)
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted && !localStorage.getItem("token")) {
+      window.location.replace("index.html");
+    }
   });
+})();
+
 })();
