@@ -7,16 +7,13 @@ let currentEditId = null;
 let ledgerData = [];
 
 /* =====================================================
-   JWT FETCH WRAPPER (STRICT + SAFE)
+   JWT FETCH WRAPPER (SAFE)
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    // hard stop – user is not authenticated
-    localStorage.clear();
-    window.location.replace("index.html");
-    return Promise.reject("No auth token");
+    throw new Error("No auth token");
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
@@ -27,26 +24,24 @@ function apiFetch(endpoint, options = {}) {
       ...(options.headers || {})
     },
     body: options.body
-  })
-    .then(async res => {
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {}
+  }).then(async res => {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {}
 
-      if (res.status === 401) {
-        // token invalid / expired / tampered
-        localStorage.clear();
-        window.location.replace("index.html");
-        throw new Error("Unauthorized");
-      }
+    if (res.status === 401) {
+      // Token is invalid → let auth-guard handle redirect
+      localStorage.clear();
+      throw new Error("Unauthorized");
+    }
 
-      if (!res.ok) {
-        throw new Error(data.error || "Request failed");
-      }
+    if (!res.ok) {
+      throw new Error(data.error || "Request failed");
+    }
 
-      return data;
-    });
+    return data;
+  });
 }
 
 /* =====================================================
@@ -58,7 +53,6 @@ function loadLedger() {
 
   if (!tbody || !balanceEl) return;
 
-  /* ===== LOAD TRANSACTIONS ===== */
   apiFetch("/api/transactions")
     .then(data => {
       ledgerData = data;
@@ -78,25 +72,26 @@ function loadLedger() {
       data.forEach(t => {
         tbody.insertAdjacentHTML("beforeend", `
           <tr>
-            <td data-label="Date">${t.date}</td>
-            <td data-label="Type">${t.type}</td>
-            <td data-label="Category">${t.category}</td>
-            <td data-label="Description">${t.description || "-"}</td>
-            <td data-label="Mode">${t.mode}</td>
-            <td data-label="Amount">${t.amount}</td>
-            <td data-label="Actions" class="actions">
-              <button class="edit-btn" onclick="openEdit(${t.id})">Edit</button>
-              <button class="delete-btn" onclick="deleteTxn(${t.id})">Delete</button>
+            <td>${t.date}</td>
+            <td>${t.type}</td>
+            <td>${t.category}</td>
+            <td>${t.description || "-"}</td>
+            <td>${t.mode}</td>
+            <td>${t.amount}</td>
+            <td class="actions">
+              <button onclick="openEdit(${t.id})">Edit</button>
+              <button onclick="deleteTxn(${t.id})">Delete</button>
             </td>
           </tr>
         `);
       });
     })
-    .catch(() => {
-      showToast("Unable to load transactions", "error");
+    .catch(err => {
+      if (err.message !== "Unauthorized") {
+        showToast("Unable to load transactions", "error");
+      }
     });
 
-  /* ===== LOAD BALANCE ===== */
   apiFetch("/api/ledger")
     .then(data => {
       balanceEl.textContent = data.balance ?? 0;
@@ -123,12 +118,8 @@ function deleteTxn(id) {
 ===================================================== */
 function openEdit(id) {
   currentEditId = id;
-
   const txn = ledgerData.find(t => t.id === id);
-  if (!txn) {
-    showToast("Transaction not found", "error");
-    return;
-  }
+  if (!txn) return;
 
   editAmount.value = txn.amount;
   editType.value = txn.type;
@@ -146,8 +137,6 @@ function closeEdit() {
 }
 
 function saveEdit() {
-  if (!currentEditId) return;
-
   apiFetch(`/api/edit-transaction/${currentEditId}`, {
     method: "PUT",
     body: JSON.stringify({
@@ -168,40 +157,26 @@ function saveEdit() {
 }
 
 /* =====================================================
-   DOWNLOAD LEDGER (JWT-CORRECT WAY)
+   DOWNLOAD LEDGER
 ===================================================== */
 function downloadLedger() {
   const token = localStorage.getItem("token");
-
-  if (!token) {
-    localStorage.clear();
-    window.location.replace("index.html");
-    return;
-  }
+  if (!token) return;
 
   fetch(`${API_BASE}/api/download-ledger`, {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   })
     .then(res => {
-      if (res.status === 401) {
-        localStorage.clear();
-        window.location.replace("index.html");
-        throw new Error("Unauthorized");
-      }
-      if (!res.ok) throw new Error("Download failed");
+      if (!res.ok) throw new Error();
       return res.blob();
     })
     .then(blob => {
-      const url = window.URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = "ledger.pdf";
-      document.body.appendChild(a);
       a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      URL.revokeObjectURL(url);
     })
     .catch(() => showToast("Download failed", "error"));
 }
@@ -215,10 +190,7 @@ function showToast(message, type = "success") {
 
   toast.textContent = message;
   toast.className = `toast show ${type}`;
-
-  setTimeout(() => {
-    toast.className = "toast";
-  }, 2500);
+  setTimeout(() => (toast.className = "toast"), 2500);
 }
 
 /* =====================================================

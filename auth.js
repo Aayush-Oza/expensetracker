@@ -18,14 +18,14 @@ function login() {
       return data;
     })
     .then(data => {
-      // 🔥 STORE JWT TOKEN
+      // Store JWT token
       localStorage.setItem("token", data.token);
 
       // Optional: store user info
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect
-      window.location.href = "dashboard.html";
+      // Hard redirect (prevents back-navigation issues)
+      window.location.replace("dashboard.html");
     })
     .catch(err => {
       console.error(err);
@@ -62,7 +62,7 @@ function register() {
     })
     .then(() => {
       // After successful register → go to login
-      window.location.href = "index.html";
+      window.location.replace("index.html");
     })
     .catch(err => {
       console.error(err);
@@ -74,7 +74,8 @@ function register() {
    LOGOUT (JWT)
 ===================================================== */
 function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  window.location.href = "index.html";
+  localStorage.clear();
+
+  // Hard redirect to avoid cached protected pages
+  window.location.replace("index.html");
 }

@@ -1,15 +1,13 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
-   JWT FETCH HELPER (STRICT)
+   JWT FETCH HELPER (SAFE, NON-DESTRUCTIVE)
 ===================================================== */
 function apiFetch(endpoint) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    localStorage.clear();
-    window.location.replace("index.html");
-    return Promise.reject("No auth token");
+    throw new Error("NO_TOKEN");
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
@@ -25,14 +23,11 @@ function apiFetch(endpoint) {
       } catch {}
 
       if (res.status === 401) {
-        // token invalid / expired / tampered
-        localStorage.clear();
-        window.location.replace("index.html");
-        throw new Error("Unauthorized");
+        throw new Error("UNAUTHORIZED");
       }
 
       if (!res.ok) {
-        throw new Error(data.error || "Request failed");
+        throw new Error(data.error || "REQUEST_FAILED");
       }
 
       return data;
@@ -95,7 +90,14 @@ apiFetch("/api/analytics")
     }
 
   })
-  .catch(() => {
-    // user is already redirected on auth failure
-    console.warn("Analytics not loaded");
+  .catch(err => {
+    // Only logout on real auth failure
+    if (err.message === "NO_TOKEN" || err.message === "UNAUTHORIZED") {
+      localStorage.clear();
+      window.location.replace("index.html");
+      return;
+    }
+
+    // Non-auth failure → stay on page
+    console.warn("Analytics not loaded:", err.message);
   });

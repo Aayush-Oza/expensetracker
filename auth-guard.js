@@ -1,16 +1,16 @@
 (function () {
-  function guard() {
-    if (!localStorage.getItem("token")) {
-      window.location.replace("index.html");
-    }
+  const token = localStorage.getItem("token");
+
+  // Initial hard check
+  if (!token) {
+    window.location.replace("index.html");
+    return;
   }
 
-  guard();
-
+  // Prevent back / cache restore after logout
   window.addEventListener("pageshow", function (event) {
-    if (event.persisted ||
-        performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
-      guard();
+    if (!localStorage.getItem("token")) {
+      window.location.replace("index.html");
     }
   });
 })();

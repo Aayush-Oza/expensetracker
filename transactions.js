@@ -1,15 +1,13 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
-   JWT FETCH HELPER (STRICT)
+   JWT FETCH HELPER (SAFE)
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    localStorage.clear();
-    window.location.replace("index.html");
-    return Promise.reject("No auth token");
+    throw new Error("No auth token");
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
@@ -20,26 +18,25 @@ function apiFetch(endpoint, options = {}) {
       ...(options.headers || {})
     },
     body: options.body
-  })
-    .then(async res => {
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {}
+  }).then(async res => {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {}
 
-      if (res.status === 401) {
-        // token invalid / expired / tampered
-        localStorage.clear();
-        window.location.replace("index.html");
-        throw new Error("Unauthorized");
-      }
+    if (res.status === 401) {
+      // token is invalid – clear it, but DO NOT redirect here
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      throw new Error("Unauthorized");
+    }
 
-      if (!res.ok) {
-        throw new Error(data.error || "Request failed");
-      }
+    if (!res.ok) {
+      throw new Error(data.error || "Request failed");
+    }
 
-      return data;
-    });
+    return data;
+  });
 }
 
 /* =====================================================
@@ -65,17 +62,22 @@ function addTransaction() {
       description.value = "";
       date.value = "";
     })
-    .catch(() => {
+    .catch(err => {
+      if (err.message === "Unauthorized") {
+        // auth-guard will redirect on next load
+        return;
+      }
       showToast("Unable to add transaction", "error");
     });
 }
 
 /* =====================================================
-   LOGOUT (JWT-CORRECT)
+   LOGOUT (USER ACTION ONLY)
 ===================================================== */
 function logout() {
-  localStorage.clear();
-  window.location.replace("index.html");
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
 }
 
 /* =====================================================
