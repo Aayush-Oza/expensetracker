@@ -1,6 +1,4 @@
 // auth-guard.js
-const API_BASE = "https://exptrk-8ssb.onrender.com";
-
 // PAGE PROTECTION (runs immediately)
 (function () {
   const token = localStorage.getItem("token");
