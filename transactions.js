@@ -13,16 +13,25 @@ function addTransaction() {
       date: date.value
     }
   })
-    .then(() => showToast("Transaction added"))
+    .then(() => {
+      showToast("Transaction added");
+
+      // optional reset
+      amount.value = "";
+      category.value = "";
+      description.value = "";
+      date.value = "";
+    })
     .catch(err => {
       if (err.message === "REQUEST_FAILED") {
         showToast("Unable to add transaction", "error");
       }
+      // UNAUTHORIZED is handled by auth-guard redirect
     });
 }
 
 /* =====================================================
-   LOGOUT (USER ACTION ONLY)
+   LOGOUT
 ===================================================== */
 function logout() {
   localStorage.clear();

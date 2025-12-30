@@ -1,6 +1,7 @@
+// auth-guard.js
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
-// 🔒 PAGE GUARD
+// PAGE PROTECTION (runs immediately)
 (function () {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -8,7 +9,7 @@ const API_BASE = "https://exptrk-8ssb.onrender.com";
   }
 })();
 
-// 🔒 AUTH FETCH
+// AUTHENTICATED FETCH
 function authFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
@@ -26,6 +27,13 @@ function authFetch(endpoint, options = {}) {
         window.location.replace("index.html");
         throw new Error("UNAUTHORIZED");
       }
-      return res.json();
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.error || "REQUEST_FAILED");
+      }
+
+      return data;
     });
 }

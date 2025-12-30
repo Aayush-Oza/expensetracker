@@ -96,14 +96,14 @@ function saveEdit() {
 
   authFetch(`/api/edit-transaction/${currentEditId}`, {
     method: "PUT",
-    body: JSON.stringify({
+    body: {
       amount: editAmount.value,
       type: editType.value,
       category: editCategory.value,
       description: editDescription.value,
       mode: editMode.value,
       date: editDate.value
-    })
+    }
   })
     .then(() => {
       showToast("Transaction updated");
@@ -117,16 +117,7 @@ function saveEdit() {
    DOWNLOAD LEDGER
 ===================================================== */
 function downloadLedger() {
-  const token = localStorage.getItem("token");
-  if (!token) return;
-
-  fetch(`${API_BASE}/api/download-ledger`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-    .then(res => {
-      if (!res.ok) throw new Error();
-      return res.blob();
-    })
+  authFetch("/api/download-ledger")
     .then(blob => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -144,6 +135,7 @@ function downloadLedger() {
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
   if (!toast) return;
+
   toast.textContent = message;
   toast.className = `toast show ${type}`;
   setTimeout(() => (toast.className = "toast"), 2500);
