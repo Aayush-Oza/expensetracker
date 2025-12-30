@@ -6,6 +6,11 @@ const API_BASE = "https://exptrk-8ssb.onrender.com";
 function authFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
+  if (!token) {
+    window.location.replace("index.html");
+    return Promise.reject(new Error("NO_TOKEN"));
+  }
+
   return fetch(`${API_BASE}${endpoint}`, {
     method: options.method || "GET",
     headers: {
@@ -16,6 +21,7 @@ function authFetch(endpoint, options = {}) {
   })
     .then(async res => {
       if (res.status === 401) {
+        // token truly invalid
         localStorage.clear();
         window.location.replace("index.html");
         throw new Error("UNAUTHORIZED");
