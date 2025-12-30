@@ -1,8 +1,39 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
-/* =====================================================
-   LOGIN (JWT)
-===================================================== */
+/* ===========================
+   AUTH FETCH
+=========================== */
+function authFetch(endpoint, options = {}) {
+  const token = localStorage.getItem("token");
+
+  return fetch(`${API_BASE}${endpoint}`, {
+    method: options.method || "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined
+  })
+    .then(async res => {
+      if (res.status === 401) {
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("UNAUTHORIZED");
+      }
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.error || "REQUEST_FAILED");
+      }
+
+      return data;
+    });
+}
+
+/* ===========================
+   LOGIN
+=========================== */
 function login() {
   fetch(`${API_BASE}/api/login`, {
     method: "POST",
@@ -22,32 +53,20 @@ function login() {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.replace("dashboard.html");
     })
-    .catch(err => {
-      console.error(err);
-      alert(err.message || "Server error");
-    });
+    .catch(err => alert(err.message || "Login error"));
 }
 
-/* =====================================================
+/* ===========================
    REGISTER
-===================================================== */
+=========================== */
 function register() {
-  const nameInput = document.getElementById("name");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-
-  if (!nameInput || !emailInput || !passwordInput) {
-    alert("Form inputs not found");
-    return;
-  }
-
   fetch(`${API_BASE}/api/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      name: nameInput.value.trim(),
-      email: emailInput.value.trim(),
-      password: passwordInput.value.trim()
+      name: name.value.trim(),
+      email: email.value.trim(),
+      password: password.value.trim()
     })
   })
     .then(async res => {
@@ -55,18 +74,13 @@ function register() {
       if (!res.ok) throw new Error(data.error || "Registration failed");
       return data;
     })
-    .then(() => {
-      window.location.replace("index.html");
-    })
-    .catch(err => {
-      console.error(err);
-      alert(err.message || "Server error");
-    });
+    .then(() => window.location.replace("index.html"))
+    .catch(err => alert(err.message || "Register error"));
 }
 
-/* =====================================================
+/* ===========================
    LOGOUT
-===================================================== */
+=========================== */
 function logout() {
   localStorage.clear();
   window.location.replace("index.html");
