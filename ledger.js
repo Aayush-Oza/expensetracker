@@ -12,7 +12,7 @@ function loadLedger() {
   const balanceEl = document.getElementById("balance");
   if (!tbody || !balanceEl) return;
 
-  apiFetch("/api/transactions")
+  authFetch("/api/transactions")
     .then(data => {
       ledgerData = data;
       tbody.innerHTML = "";
@@ -47,7 +47,7 @@ function loadLedger() {
     })
     .catch(() => showToast("Unable to load transactions", "error"));
 
-  apiFetch("/api/ledger")
+  authFetch("/api/ledger")
     .then(data => {
       balanceEl.textContent = data.balance ?? 0;
     })
@@ -60,7 +60,7 @@ function loadLedger() {
    DELETE
 ===================================================== */
 function deleteTxn(id) {
-  apiFetch(`/api/delete-transaction/${id}`, { method: "DELETE" })
+  authFetch(`/api/delete-transaction/${id}`, { method: "DELETE" })
     .then(() => {
       showToast("Transaction deleted");
       loadLedger();
@@ -94,7 +94,7 @@ function closeEdit() {
 function saveEdit() {
   if (!currentEditId) return;
 
-  apiFetch(`/api/edit-transaction/${currentEditId}`, {
+  authFetch(`/api/edit-transaction/${currentEditId}`, {
     method: "PUT",
     body: JSON.stringify({
       amount: editAmount.value,

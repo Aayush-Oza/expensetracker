@@ -2,7 +2,7 @@
    LOAD ANALYTICS
 ===================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-  apiFetch("/api/analytics")
+  authFetch("/api/analytics")
     .then(data => {
 
       /* ===== PAYMENT MODE ===== */
