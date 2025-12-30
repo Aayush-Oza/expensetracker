@@ -1,40 +1,4 @@
 /* =====================================================
-   JWT FETCH HELPER (STRICT)
-===================================================== */
-function apiFetch(endpoint) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    localStorage.clear();
-    window.location.replace("index.html");
-    return Promise.reject(new Error("NO_TOKEN"));
-  }
-
-  return fetch(`${API_BASE}${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    }
-  })
-    .then(async res => {
-      if (res.status === 401) {
-        // hard stop — token is invalid
-        localStorage.clear();
-        window.location.replace("index.html");
-        throw new Error("UNAUTHORIZED");
-      }
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        throw new Error(data.error || "REQUEST_FAILED");
-      }
-
-      return data;
-    });
-}
-
-/* =====================================================
    LOAD ANALYTICS
 ===================================================== */
 document.addEventListener("DOMContentLoaded", () => {

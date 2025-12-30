@@ -5,43 +5,6 @@ let currentEditId = null;
 let ledgerData = [];
 
 /* =====================================================
-   JWT FETCH WRAPPER
-===================================================== */
-function apiFetch(endpoint, options = {}) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    localStorage.clear();
-    window.location.replace("index.html");
-    return Promise.reject();
-  }
-
-  return fetch(`${API_BASE}${endpoint}`, {
-    method: options.method || "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-      ...(options.headers || {})
-    },
-    body: options.body
-  }).then(async res => {
-    if (res.status === 401) {
-      localStorage.clear();
-      window.location.replace("index.html");
-      throw new Error("UNAUTHORIZED");
-    }
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      throw new Error(data.error || "REQUEST_FAILED");
-    }
-
-    return data;
-  });
-}
-
-/* =====================================================
    LOAD LEDGER
 ===================================================== */
 function loadLedger() {
