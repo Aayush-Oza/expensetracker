@@ -1,13 +1,14 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
-   JWT FETCH HELPER (CLEAN & CONSISTENT)
+   JWT FETCH HELPER (FINAL)
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    // user is not logged in
+    localStorage.clear();
+    window.location.replace("index.html");
     return Promise.reject(new Error("NO_TOKEN"));
   }
 
@@ -20,20 +21,17 @@ function apiFetch(endpoint, options = {}) {
     body: options.body ? JSON.stringify(options.body) : undefined
   })
     .then(async res => {
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {}
-
       if (res.status === 401) {
-        // token invalid / expired
-        return Promise.reject(new Error("UNAUTHORIZED"));
+        // hard fail – token is invalid
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("UNAUTHORIZED");
       }
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        return Promise.reject(
-          new Error(data.error || "REQUEST_FAILED")
-        );
+        throw new Error(data.error || "REQUEST_FAILED");
       }
 
       return data;
@@ -64,13 +62,10 @@ function addTransaction() {
       date.value = "";
     })
     .catch(err => {
-      if (err.message === "NO_TOKEN" || err.message === "UNAUTHORIZED") {
-        // let auth-guard handle redirect
-        return;
+      // only show toast for real app errors
+      if (err.message === "REQUEST_FAILED") {
+        showToast("Unable to add transaction", "error");
       }
-
-      console.error(err);
-      showToast("Unable to add transaction", "error");
     });
 }
 
@@ -78,9 +73,8 @@ function addTransaction() {
    LOGOUT (USER ACTION ONLY)
 ===================================================== */
 function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  window.location.href = "index.html";
+  localStorage.clear();
+  window.location.replace("index.html");
 }
 
 /* =====================================================

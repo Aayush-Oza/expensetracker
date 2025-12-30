@@ -7,13 +7,15 @@ let currentEditId = null;
 let ledgerData = [];
 
 /* =====================================================
-   JWT FETCH WRAPPER (PASSIVE)
+   JWT FETCH WRAPPER
 ===================================================== */
 function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    return Promise.reject(new Error("NO_TOKEN"));
+    localStorage.clear();
+    window.location.replace("index.html");
+    return Promise.reject();
   }
 
   return fetch(`${API_BASE}${endpoint}`, {
@@ -25,19 +27,16 @@ function apiFetch(endpoint, options = {}) {
     },
     body: options.body
   }).then(async res => {
-    let data = {};
-    try {
-      data = await res.json();
-    } catch {}
-
     if (res.status === 401) {
-      return Promise.reject(new Error("UNAUTHORIZED"));
+      localStorage.clear();
+      window.location.replace("index.html");
+      throw new Error("UNAUTHORIZED");
     }
 
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      return Promise.reject(
-        new Error(data.error || "REQUEST_FAILED")
-      );
+      throw new Error(data.error || "REQUEST_FAILED");
     }
 
     return data;
@@ -85,12 +84,7 @@ function loadLedger() {
         `);
       });
     })
-    .catch(err => {
-      if (err.message !== "UNAUTHORIZED") {
-        showToast("Unable to load transactions", "error");
-      }
-      // auth-guard will redirect if token is truly gone
-    });
+    .catch(() => showToast("Unable to load transactions", "error"));
 
   apiFetch("/api/ledger")
     .then(data => {
@@ -137,6 +131,8 @@ function closeEdit() {
 }
 
 function saveEdit() {
+  if (!currentEditId) return;
+
   apiFetch(`/api/edit-transaction/${currentEditId}`, {
     method: "PUT",
     body: JSON.stringify({

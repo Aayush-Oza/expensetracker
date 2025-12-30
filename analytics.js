@@ -1,12 +1,14 @@
 const API_BASE = "https://exptrk-8ssb.onrender.com";
 
 /* =====================================================
-   JWT FETCH HELPER (PASSIVE, NO REDIRECTS)
+   JWT FETCH HELPER (STRICT)
 ===================================================== */
 function apiFetch(endpoint) {
   const token = localStorage.getItem("token");
 
   if (!token) {
+    localStorage.clear();
+    window.location.replace("index.html");
     return Promise.reject(new Error("NO_TOKEN"));
   }
 
@@ -17,19 +19,17 @@ function apiFetch(endpoint) {
     }
   })
     .then(async res => {
-      let data = {};
-      try {
-        data = await res.json();
-      } catch {}
-
       if (res.status === 401) {
-        return Promise.reject(new Error("UNAUTHORIZED"));
+        // hard stop — token is invalid
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("UNAUTHORIZED");
       }
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        return Promise.reject(
-          new Error(data.error || "REQUEST_FAILED")
-        );
+        throw new Error(data.error || "REQUEST_FAILED");
       }
 
       return data;
@@ -37,7 +37,7 @@ function apiFetch(endpoint) {
 }
 
 /* =====================================================
-   LOAD ANALYTICS (ONCE)
+   LOAD ANALYTICS
 ===================================================== */
 document.addEventListener("DOMContentLoaded", () => {
   apiFetch("/api/analytics")
@@ -87,10 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
     })
-    .catch(err => {
-      // ❌ DO NOT REDIRECT HERE
-      // auth-guard handles navigation
-
-      console.warn("Analytics load skipped:", err.message);
+    .catch(() => {
+      // handled centrally (redirect already happened)
     });
 });

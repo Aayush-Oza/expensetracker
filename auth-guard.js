@@ -1,30 +1,37 @@
-(function () {
+const API_BASE = "https://exptrk-8ssb.onrender.com";
+
+function authFetch(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
-  // Initial hard check
   if (!token) {
+    localStorage.clear();
     window.location.replace("index.html");
-    return;
+    return Promise.reject(new Error("NO_TOKEN"));
   }
 
-  // Prevent back / cache restore after logout
-  window.addEventListener("pageshow", function (event) {
-    if (!localStorage.getItem("token")) {
-      window.location.replace("index.html");
-    }
-  });(function () {
-  // Initial hard auth check
-  if (!localStorage.getItem("token")) {
-    window.location.replace("index.html");
-    return;
-  }
+  return fetch(`${API_BASE}${endpoint}`, {
+    method: options.method || "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+      ...(options.headers || {})
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined
+  })
+    .then(async res => {
+      if (res.status === 401) {
+        // terminal auth failure
+        localStorage.clear();
+        window.location.replace("index.html");
+        throw new Error("UNAUTHORIZED");
+      }
 
-  // Handle back / cache restore (mobile-safe)
-  window.addEventListener("pageshow", function (event) {
-    if (event.persisted && !localStorage.getItem("token")) {
-      window.location.replace("index.html");
-    }
-  });
-})();
+      const data = await res.json().catch(() => ({}));
 
-})();
+      if (!res.ok) {
+        throw new Error(data.error || "REQUEST_FAILED");
+      }
+
+      return data;
+    });
+}

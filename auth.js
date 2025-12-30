@@ -13,18 +13,13 @@ function login() {
     })
   })
     .then(async res => {
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Login failed");
       return data;
     })
     .then(data => {
-      // Store JWT token
       localStorage.setItem("token", data.token);
-
-      // Optional: store user info
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Hard redirect (prevents back-navigation issues)
       window.location.replace("dashboard.html");
     })
     .catch(err => {
@@ -56,12 +51,11 @@ function register() {
     })
   })
     .then(async res => {
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Registration failed");
       return data;
     })
     .then(() => {
-      // After successful register → go to login
       window.location.replace("index.html");
     })
     .catch(err => {
@@ -71,11 +65,9 @@ function register() {
 }
 
 /* =====================================================
-   LOGOUT (JWT)
+   LOGOUT
 ===================================================== */
 function logout() {
   localStorage.clear();
-
-  // Hard redirect to avoid cached protected pages
   window.location.replace("index.html");
 }
