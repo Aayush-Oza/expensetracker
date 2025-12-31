@@ -38,8 +38,8 @@ function loadLedger() {
             <td>${t.mode}</td>
             <td>${t.amount}</td>
             <td class="actions">
-              <button onclick="openEdit(${t.id})">Edit</button>
-              <button onclick="deleteTxn(${t.id})">Delete</button>
+            <button class="edit-btn" onclick="openEdit(${t.id})">Edit</button>
+            <button class="delete-btn" onclick="deleteTxn(${t.id})">Delete</button>
             </td>
           </tr>
         `);
@@ -117,13 +117,26 @@ function saveEdit() {
    DOWNLOAD LEDGER
 ===================================================== */
 function downloadLedger() {
-  authFetch("/api/download-ledger")
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  fetch(`${API_BASE}/api/download-ledger`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Download failed");
+      return res.blob(); // ✅ THIS IS THE KEY
+    })
     .then(blob => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = "ledger.pdf";
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(url);
     })
     .catch(() => showToast("Download failed", "error"));
