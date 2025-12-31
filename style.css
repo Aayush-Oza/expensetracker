@@ -342,6 +342,7 @@ select:focus {
   border-color: #000;
   transform: translateY(-3px);
 }
+
 /* =====================================================
    ANALYTICS
 ===================================================== */
@@ -529,3 +530,4 @@ select:focus {
     font-size: 1.1rem;
   }
 }
+
