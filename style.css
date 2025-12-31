@@ -280,83 +280,68 @@ select:focus {
 .toast.success { background: #16a34a; }
 .toast.error { background: #dc2626; }
 
-/* =====================================================
+/* =============================
    FOOTER
-===================================================== */
-/* =====================================================
-   FOOTER (CLEAN REDESIGN)
-===================================================== */
+============================= */
+
 .site-footer {
-  background: #0f172a;
-  color: #e5e7eb;
-  padding: 50px 16px 30px;
+  background: #f0f0f0;
+  padding: 50px 0;
   margin-top: 80px;
+  border-top: 2px solid #ccc;
 }
 
 .footer-grid {
-  max-width: 1200px;
-  margin: auto;
   display: grid;
-  gap: 28px;
+  gap: 20px;
+  justify-items: center;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: repeat(3, 1fr);
+    text-align: left;
+    justify-items: start;
+  }
 }
 
 .footer-card {
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
-}
-
-.footer-card h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #fff;
-}
-
-.footer-card p {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: #cbd5f5;
+  background: var(--panel);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--soft-shadow);
+  border: 1px solid #ddd;
 }
 
 .socials {
   display: flex;
-  gap: 14px;
-  margin-top: 14px;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: center;
 }
 
-.socials a {
-  width: 38px;
-  height: 38px;
+@media (min-width: 768px) {
+  .socials { justify-content: flex-start; }
+}
+
+.social {
+  padding: 10px;
+  background: #fff;
+  border-radius: 12px;
+  border: 2px solid #aaa;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  transition: 0.25s ease;
 }
 
-.socials a:hover {
-  background: var(--primary);
+.social:hover {
+  background: #000;
+  color: #fff;
+  border-color: #000;
   transform: translateY(-3px);
 }
-
-.site-footer > p {
-  margin-top: 40px;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #94a3b8;
-}
-
-/* Responsive */
-@media (min-width: 768px) {
-  .footer-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-
 /* =====================================================
    ANALYTICS
 ===================================================== */
