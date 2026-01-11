@@ -63,6 +63,7 @@ function register() {
 ========================= */
 function logout() {
   localStorage.clear();
-  window.location.replace("index.html");
+  window.location.replace("..index.html");
 }
+
 
