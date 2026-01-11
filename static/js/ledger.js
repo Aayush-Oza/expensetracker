@@ -3,7 +3,6 @@
 ===================================================== */
 let currentEditId = null;
 let ledgerData = [];
-
 /* =====================================================
    LOAD LEDGER
 ===================================================== */
@@ -11,12 +10,10 @@ function loadLedger() {
   const tbody = document.getElementById("ledgerBody");
   const balanceEl = document.getElementById("balance");
   if (!tbody || !balanceEl) return;
-
   authFetch("/api/transactions")
     .then(data => {
       ledgerData = data;
       tbody.innerHTML = "";
-
       if (!data.length) {
         tbody.innerHTML = `
           <tr>
@@ -27,7 +24,6 @@ function loadLedger() {
         `;
         return;
       }
-
       data.forEach(t => {
         tbody.insertAdjacentHTML("beforeend", `
           <tr>
@@ -46,7 +42,6 @@ function loadLedger() {
       });
     })
     .catch(() => showToast("Unable to load transactions", "error"));
-
   authFetch("/api/ledger")
     .then(data => {
       balanceEl.textContent = data.balance ?? 0;
@@ -55,7 +50,6 @@ function loadLedger() {
       balanceEl.textContent = "—";
     });
 }
-
 /* =====================================================
    DELETE
 ===================================================== */
@@ -67,7 +61,6 @@ function deleteTxn(id) {
     })
     .catch(() => showToast("Delete failed", "error"));
 }
-
 /* =====================================================
    EDIT
 ===================================================== */
@@ -75,25 +68,20 @@ function openEdit(id) {
   currentEditId = id;
   const txn = ledgerData.find(t => t.id === id);
   if (!txn) return;
-
   editAmount.value = txn.amount;
   editType.value = txn.type;
   editCategory.value = txn.category;
   editDescription.value = txn.description || "";
   editMode.value = txn.mode;
   editDate.value = txn.date;
-
   document.getElementById("editModal").classList.remove("hidden");
 }
-
 function closeEdit() {
   document.getElementById("editModal").classList.add("hidden");
   currentEditId = null;
 }
-
 function saveEdit() {
   if (!currentEditId) return;
-
   authFetch(`/api/edit-transaction/${currentEditId}`, {
     method: "PUT",
     body: {
@@ -112,14 +100,12 @@ function saveEdit() {
     })
     .catch(() => showToast("Update failed", "error"));
 }
-
 /* =====================================================
    DOWNLOAD LEDGER
 ===================================================== */
 function downloadLedger() {
   const token = localStorage.getItem("token");
   if (!token) return;
-
   fetch(`${API_BASE}/api/download-ledger`, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -141,19 +127,16 @@ function downloadLedger() {
     })
     .catch(() => showToast("Download failed", "error"));
 }
-
 /* =====================================================
    TOAST
 ===================================================== */
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
   if (!toast) return;
-
   toast.textContent = message;
   toast.className = `toast show ${type}`;
   setTimeout(() => (toast.className = "toast"), 2500);
 }
-
 /* =====================================================
    INIT
 ===================================================== */
