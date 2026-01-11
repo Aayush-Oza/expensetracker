@@ -35,7 +35,7 @@ function addTransaction() {
 ===================================================== */
 function logout() {
   localStorage.clear();
-  window.location.replace("index.html");
+  window.location.replace("../index.html");
 }
 
 /* =====================================================
@@ -52,3 +52,4 @@ function showToast(message, type = "success") {
     toast.className = "toast";
   }, 2500);
 }
+
