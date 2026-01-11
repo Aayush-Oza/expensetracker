@@ -4,7 +4,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   authFetch("/api/analytics")
     .then(data => {
-
       /* ===== PAYMENT MODE ===== */
       const modeCanvas = document.getElementById("modeChart");
       if (modeCanvas && data.modes && Object.keys(data.modes).length) {
@@ -16,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
-
       /* ===== DEBIT VS CREDIT ===== */
       const typeCanvas = document.getElementById("typeChart");
       if (typeCanvas && data.types && Object.keys(data.types).length) {
@@ -28,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
-
       /* ===== CATEGORY EXPENSE ===== */
       const categoryCanvas = document.getElementById("categoryChart");
       if (categoryCanvas && data.categories && Object.keys(data.categories).length) {
@@ -47,10 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
-
     })
     .catch(() => {
       // handled centrally (redirect already happened)
     });
 });
-
