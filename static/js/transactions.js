@@ -15,7 +15,6 @@ function addTransaction() {
   })
     .then(() => {
       showToast("Transaction added");
-
       // optional reset
       amount.value = "";
       category.value = "";
@@ -29,7 +28,6 @@ function addTransaction() {
       // UNAUTHORIZED is handled by auth-guard redirect
     });
 }
-
 /* =====================================================
    LOGOUT
 ===================================================== */
@@ -37,19 +35,15 @@ function logout() {
   localStorage.clear();
   window.location.replace("../index.html");
 }
-
 /* =====================================================
    TOAST
 ===================================================== */
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
   if (!toast) return;
-
   toast.textContent = message;
   toast.className = `toast show ${type}`;
-
   setTimeout(() => {
     toast.className = "toast";
   }, 2500);
 }
-
