@@ -8,46 +8,35 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
 <header class="topbar">
   <h1>Analytics</h1>
-
   <input type="checkbox" id="menu-toggle" class="menu-toggle">
   <label for="menu-toggle" class="menu-icon">☰</label>
-
   <div class="topbar-actions">
     <a href="/templates/dashboard.html" class="btn primary">
       Add Entry
     </a>
-
     <a href="/templates/transactions.html" class="btn secondary">
       View Ledger
     </a>
-
     <button class="btn danger" onclick="logout()">
   Logout
 </button>
-
   </div>
 </header>
-
 <main class="analytics-page">
-
   <section class="card">
     <h2>Payment Mode Distribution</h2>
     <canvas id="modeChart"></canvas>
   </section>
-
   <section class="card">
     <h2>Debit vs Credit</h2>
     <canvas id="typeChart"></canvas>
   </section>
-
   <section class="card full-width">
     <h2>Expense by Category</h2>
     <canvas id="categoryChart"></canvas>
   </section>
-
 </main>
 <script src="/static/js/config.js"></script>
 <script src="/static/js/auth.js"></script>
@@ -56,16 +45,13 @@
 <!-- FOOTER -->
 <footer class="site-footer">
   <div class="container footer-grid">
-
       <div class="footer-card">
         <h3>Contact</h3>
         <p>Email: aayushoza2006@gmail.com</p>
       </div>
-
       <div class="footer-card">
         <h3>Follow Me</h3>
         <div class="socials">
-
             <!-- Instagram -->
             <a class="social" href="https://instagram.com/aayushoza_" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -78,7 +64,6 @@
                 0-2.5 1.25 1.25 0 0 0 0 2.5z"/>
               </svg>
             </a>
-
             <!-- LinkedIn -->
             <a class="social" href="https://linkedin.com/in/aayushoza" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -92,7 +77,6 @@
                 2-2.9 4V24h-4V8z"/>
               </svg>
             </a>
-
             <!-- GitHub -->
             <a class="social" href="https://github.com/Aayush-Oza" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -111,13 +95,11 @@
                 0 0 12 .5Z"/>
               </svg>
             </a>
-
         </div>
       </div>
 <div class="footer-card">
   <h3>My Portfolio</h3>
   <p>Explore my projects, designs, and complete work showcase.</p>
-
   <a 
     href="https://aayushozaportfolio.netlify.app/" 
     target="_blank" 
@@ -141,13 +123,7 @@
   </div>
   <p style="text-align:center;margin-top:20px;">© 2025 Aayush Oza</p>
 </footer>
-
 </body>
 </html>
-
-
-
-
-
 
 
