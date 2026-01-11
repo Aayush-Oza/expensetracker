@@ -4,7 +4,6 @@
 function login() {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-
   fetch(`${API_BASE}/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -27,7 +26,6 @@ function login() {
       console.error("Login error:", err);
     });
 }
-
 /* =========================
    REGISTER
 ========================= */
@@ -35,7 +33,6 @@ function register() {
   const nameInput = document.getElementById("name");
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
-
   fetch(`${API_BASE}/api/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -57,7 +54,6 @@ function register() {
       console.error("Register error:", err);
     });
 }
-
 /* =========================
    LOGOUT
 ========================= */
@@ -65,6 +61,3 @@ function logout() {
   localStorage.clear();
   window.location.replace("../index.html");
 }
-
-
-
