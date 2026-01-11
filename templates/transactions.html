@@ -7,38 +7,29 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-
 <header class="topbar">
   <h1>Transactions</h1>
 <input type="checkbox" id="menu-toggle" class="menu-toggle">
 <label for="menu-toggle" class="menu-icon">☰</label>
-
   <div class="topbar-actions">
     <a href="/templates/dashboard.html" class="btn primary">
   Add Transaction
 </a>
-
     <a href="/templates/analytics.html" class="btn secondary">
       Analytics
     </a>
-
     <button class="btn danger" onclick="logout()">
   Logout
 </button>
-
   </div>
 </header>
-
 <main class="ledger-page">
-
   <section class="card ledger-balance">
     <h2>Current Balance</h2>
     <p id="balance">0</p>
   </section>
-
   <section class="card ledger-table-card">
     <h2>Transaction History</h2>
-
     <div class="table-wrap">
       <table class="ledger-table">
         <thead>
@@ -52,28 +43,22 @@
 <th>Actions</th>
   </tr>
 </thead>
-
         <tbody id="ledgerBody"></tbody>
       </table>
     </div>
-
     <button type="button" class="primary" onclick="downloadLedger()">
   Download Ledger
 </button>
-
   </section>
-
 </main>
 <div id="editModal" class="modal hidden">
   <div class="modal-card">
     <h3>Edit Transaction</h3>
-
     <input type="number" id="editAmount">
     <select id="editType">
       <option value="debit">Debit</option>
       <option value="credit">Credit</option>
     </select>
-
     <select id="editCategory">
   <option value="food">Food</option>
   <option value="travel">Travel</option>
@@ -81,15 +66,12 @@
   <option value="shopping">Shopping</option>
   <option value="other">Other</option>
 </select>
-
     <input type="text" id="editDescription" placeholder="Description">
     <select id="editMode">
       <option value="cash">Cash</option>
       <option value="online">Online</option>
     </select>
-
     <input type="date" id="editDate">
-
     <div class="modal-actions">
       <button type="button" onclick="saveEdit()">Save</button>
 <button type="button" onclick="closeEdit()" class="danger">Cancel</button>
@@ -103,16 +85,13 @@
 <!-- FOOTER -->
 <footer class="site-footer">
   <div class="container footer-grid">
-
       <div class="footer-card">
         <h3>Contact</h3>
         <p>Email: aayushoza2006@gmail.com</p>
       </div>
-
       <div class="footer-card">
         <h3>Follow Me</h3>
         <div class="socials">
-
             <!-- Instagram -->
             <a class="social" href="https://instagram.com/aayushoza_" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -125,7 +104,6 @@
                 0-2.5 1.25 1.25 0 0 0 0 2.5z"/>
               </svg>
             </a>
-
             <!-- LinkedIn -->
             <a class="social" href="https://linkedin.com/in/aayushoza" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -139,7 +117,6 @@
                 2-2.9 4V24h-4V8z"/>
               </svg>
             </a>
-
             <!-- GitHub -->
             <a class="social" href="https://github.com/Aayush-Oza" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -158,13 +135,11 @@
                 0 0 12 .5Z"/>
               </svg>
             </a>
-
         </div>
       </div>
 <div class="footer-card">
   <h3>My Portfolio</h3>
   <p>Explore my projects, designs, and complete work showcase.</p>
-
   <a 
     href="https://aayushozaportfolio.netlify.app/" 
     target="_blank" 
@@ -188,14 +163,5 @@
   </div>
   <p style="text-align:center;margin-top:20px;">© 2025 Aayush Oza</p>
 </footer>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
