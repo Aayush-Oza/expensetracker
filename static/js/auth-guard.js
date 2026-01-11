@@ -3,7 +3,7 @@
 (function () {
   const token = localStorage.getItem("token");
   if (!token) {
-    window.location.replace("index.html");
+    window.location.replace("../index.html");
   }
 })();
 
@@ -22,7 +22,7 @@ function authFetch(endpoint, options = {}) {
     .then(async res => {
       if (res.status === 401) {
         localStorage.clear();
-        window.location.replace("index.html");
+        window.location.replace("../index.html");
         throw new Error("UNAUTHORIZED");
       }
 
