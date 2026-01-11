@@ -53,3 +53,4 @@ document.addEventListener("DOMContentLoaded", () => {
       // handled centrally (redirect already happened)
     });
 });
+
