@@ -7,37 +7,29 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-
 <header class="topbar">
   <h1>Add Transaction</h1>
 <input type="checkbox" id="menu-toggle" class="menu-toggle">
 <label for="menu-toggle" class="menu-icon">☰</label>
-
   <div class="topbar-actions">
     <a href="/templates/transactions.html" class="btn primary">
       View Ledger
     </a>
-
     <a href="/templates/analytics.html" class="btn secondary">
       Analytics
     </a>
-
     <button class="btn danger" onclick="logout()">
   Logout
 </button>
-
   </div>
 </header>
-
 <main class="center-page">
   <section class="card">
     <h2>Add Entry</h2>
-
     <label>
       Amount
       <input type="number" id="amount" placeholder="Enter amount">
     </label>
-
     <label>
       Type
       <select id="type">
@@ -45,7 +37,6 @@
         <option value="credit">Credit</option>
       </select>
     </label>
-
     <label>
   Category
   <select id="category">
@@ -57,7 +48,6 @@
     <option value="other">Other</option>
   </select>
 </label>
-
 <label>
   Description (optional)
   <input 
@@ -66,8 +56,6 @@
     placeholder="Extra details (restaurant name, taxi, etc.)"
   >
 </label>
-
-
     <label>
       Mode
       <select id="mode">
@@ -75,12 +63,10 @@
         <option value="online">Online</option>
       </select>
     </label>
-
     <label>
       Date
       <input type="date" id="date">
     </label>
-
     <button class="primary" onclick="addTransaction()">
       Save Transaction
     </button>
@@ -94,16 +80,13 @@
 <!-- FOOTER -->
 <footer class="site-footer">
   <div class="container footer-grid">
-
       <div class="footer-card">
         <h3>Contact</h3>
         <p>Email: aayushoza2006@gmail.com</p>
       </div>
-
       <div class="footer-card">
         <h3>Follow Me</h3>
         <div class="socials">
-
             <!-- Instagram -->
             <a class="social" href="https://instagram.com/aayushoza_" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -116,7 +99,6 @@
                 0-2.5 1.25 1.25 0 0 0 0 2.5z"/>
               </svg>
             </a>
-
             <!-- LinkedIn -->
             <a class="social" href="https://linkedin.com/in/aayushoza" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -130,7 +112,6 @@
                 2-2.9 4V24h-4V8z"/>
               </svg>
             </a>
-
             <!-- GitHub -->
             <a class="social" href="https://github.com/Aayush-Oza" target="_blank">
               <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
@@ -149,13 +130,11 @@
                 0 0 12 .5Z"/>
               </svg>
             </a>
-
         </div>
       </div>
 <div class="footer-card">
   <h3>My Portfolio</h3>
   <p>Explore my projects, designs, and complete work showcase.</p>
-
   <a 
     href="https://aayushozaportfolio.netlify.app/" 
     target="_blank" 
@@ -179,8 +158,5 @@
   </div>
   <p style="text-align:center;margin-top:20px;">© 2025 Aayush Oza</p>
 </footer>
-
 </body>
 </html>
-
-
