@@ -1,4 +1,3 @@
-// auth-guard.js
 // PAGE PROTECTION (runs immediately)
 (function () {
   const token = localStorage.getItem("token");
@@ -30,3 +29,4 @@ function authFetch(endpoint, options = {}) {
       return data;
     });
 }
+
