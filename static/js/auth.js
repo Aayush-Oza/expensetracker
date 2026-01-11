@@ -20,7 +20,7 @@ function login() {
     })
     .then(data => {
       localStorage.setItem("token", data.token);
-      window.location.replace("dashboard.html");
+      window.location.replace("templates/dashboard.html");
     })
     .catch(err => {
       alert(err.message);
@@ -65,3 +65,4 @@ function logout() {
   localStorage.clear();
   window.location.replace("index.html");
 }
+
