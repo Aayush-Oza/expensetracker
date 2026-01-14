@@ -4,6 +4,11 @@
   if (!token) {
     window.location.replace("../index.html");
   }
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted || !localStorage.getItem("token")) {
+      window.location.replace("../index.html");
+    }
+  });
 })();
 // AUTHENTICATED FETCH
 function authFetch(endpoint, options = {}) {
@@ -29,4 +34,5 @@ function authFetch(endpoint, options = {}) {
       return data;
     });
 }
+
 
