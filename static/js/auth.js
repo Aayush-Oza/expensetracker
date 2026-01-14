@@ -47,7 +47,7 @@ function register() {
         const data = await res.json();
         throw new Error(data.error || "Registration failed");
       }
-      window.location.replace("index.html");
+      window.location.replace("../index.html");
     })
     .catch(err => {
       alert(err.message);
@@ -61,3 +61,4 @@ function logout() {
   localStorage.clear();
   window.location.replace("../index.html");
 }
+
