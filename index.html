@@ -19,6 +19,7 @@
 </div>
 <script src="/static/js/config.js"></script>
 <script src="/static/js/auth.js"></script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".toggle-password").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -30,7 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.textContent = input.type === "password" ? "👁" : "🙈";
     });
   });
-});  i will be adding interanlly in both  html
+}); 
+</script>
 </body>
 </html>
+
 
