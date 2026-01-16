@@ -456,3 +456,34 @@ select:focus {
     font-size: 1.1rem;
   }
 }
+/* =====================================================
+   PASSWORD FIELD WITH INLINE EYE
+===================================================== */
+.password-field {
+  position: relative;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.password-field input {
+  width: 100%;
+  padding: 12px;
+  padding-right: 44px; /* space for eye */
+}
+
+/* Override global button styles */
+.password-field .toggle-password {
+  all: unset;               /* ← THIS is the key */
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.password-field .toggle-password:hover {
+  color: var(--text);
+}
