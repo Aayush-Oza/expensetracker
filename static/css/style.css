@@ -470,22 +470,26 @@ select:focus {
   padding: 12px;
   padding-right: 44px; /* space for eye */
 }
-
-/* Override global button styles */
 .password-field .toggle-password {
-  all: unset;               /* ← THIS is the key */
+  all: unset;
   position: absolute;
-  right: 16px;
-  top: 40%;
+  right: 12px;
+  top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  font-size: 0.95rem;
   color: var(--muted);
   line-height: 1;
-}
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 100%;
+}
 .password-field .toggle-password:hover {
   color: var(--text);
 }
+
 
 
