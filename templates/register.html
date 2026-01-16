@@ -13,7 +13,14 @@
   <input id="email" type="email" placeholder="Email">
   <div class="password-field">
   <input id="password" type="password" placeholder="Password">
-  <button type="button" class="toggle-password">👁</button>
+  <button type="button" class="toggle-password" aria-label="Toggle password">
+  <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+          fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle cx="12" cy="12" r="3"
+            fill="none" stroke="currentColor" stroke-width="2"/>
+  </svg>
+</button>
 </div>
   <button onclick="register()">Register</button>
   <p>Already have an account? <a href="../index.html">Login</a></p>
@@ -37,5 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
+
 
 
