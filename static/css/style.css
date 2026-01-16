@@ -471,25 +471,20 @@ select:focus {
   padding-right: 44px; /* space for eye */
 }
 .password-field .toggle-password {
-  all: unset;
+  all: unset;               /* ← THIS is the key */
   position: absolute;
-  right: 12px;
-  top: 50%;
+  right: 16px;
+  top: 40%;
   transform: translateY(-50%);
   cursor: pointer;
+  font-size: 0.95rem;
   color: var(--muted);
   line-height: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 40px;
-  height: 100%;
 }
 .password-field .toggle-password:hover {
   color: var(--text);
 }
+
 
 
 
