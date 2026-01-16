@@ -475,8 +475,8 @@ select:focus {
 .password-field .toggle-password {
   all: unset;               /* ← THIS is the key */
   position: absolute;
-  right: 12px;
-  top: 42%;
+  right: 16px;
+  top: 40%;
   transform: translateY(-50%);
   cursor: pointer;
   font-size: 0.95rem;
@@ -487,4 +487,5 @@ select:focus {
 .password-field .toggle-password:hover {
   color: var(--text);
 }
+
 
