@@ -18,20 +18,24 @@
   <p>New user? <a href="templates/register.html">Register</a></p>
 </div>
 <script src="/static/js/config.js"></script>
-<script src="/static/js/auth.js"></script>
-<script>
+<script src="/static/js/auth.js"></script><script>
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".toggle-password").forEach(btn => {
     btn.addEventListener("click", () => {
       const input = btn.previousElementSibling;
       if (!input) return;
-      input.type = input.type === "password" ? "text" : "password";
+
+      const isHidden = input.type === "password";
+
+      input.type = isHidden ? "text" : "password";
+      btn.textContent = isHidden ? "🙈" : "👁";
     });
   });
 });
 </script>
 </body>
 </html>
+
 
 
 
